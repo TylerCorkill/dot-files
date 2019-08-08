@@ -2,16 +2,9 @@ alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
 alias ls="ls -G"
+alias ll="ls -al"
 alias +="git add"
 alias ?="git status"
-alias commit="git commit -am"
-alias push="git push"
-alias pull="git pull"
-alias clone="git clone"
-# alias kfix="rm ~/.kde4/share/config/kwinrc"
-alias rpi="mosh 192.168.3.84"
-alias newp="python ~/.scripts/new_git_project.py"
-alias delp="python ~/.scripts/del_git_project.py"
 
 function showfind { defaults write com.apple.finder AppleShowAllFiles YES && killall Finder; }
 function hidefind { defaults write com.apple.finder AppleShowAllFiles NO && killall Finder; }
@@ -26,6 +19,13 @@ function lscmds
         -executable -type f -printf '%P\n' | sort -u
 }
 
+function gom { git commit -m "$(parse_git_branch_only) -- $@"; }
+
+# Constants
+default_username='tyler.corkill'
+default_hostname='Tyler-Corkill'
+scripts_dir='/Users/tyler.corkill/.scripts'
+
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
@@ -34,10 +34,9 @@ PS2='> '
 PS3='> '
 PS4='+ '
 
-[ -r /usr/share/bash-completion/bash_completion   ] && . /usr/share/bash-completion/bash_completion
-
-default_username='tsx525'
-default_hostname='525.local'
+if [ -f $scripts_dir/git-completion.bash ]; then
+  . $scripts_dir/git-completion.bash
+fi
 
 if [[ $COLORTERM = gnome-* && $TERM = xterm ]] && infocmp gnome-256color >/dev/null 2>&1; then
 	export TERM=gnome-256color
@@ -81,6 +80,10 @@ function parse_git_branch() {
 	git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/\1$(parse_git_dirty)/"
 }
 
+function parse_git_branch_only() {
+        git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/\1/"
+}
+
 # Only show username/host if not default
 # function usernamehost() {
 # 	if [ $USER != $default_username ]; then echo "${MAGENTA}$USER$WHITE|"; fi
@@ -119,3 +122,9 @@ PATH="/Library/Frameworks/Python.framework/Versions/2.7/bin:${PATH}"
 export PATH
 
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+export PATH="$HOME/.cargo/bin:$PATH"
