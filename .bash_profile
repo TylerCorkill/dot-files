@@ -20,6 +20,7 @@ function lscmds
 }
 
 function gom { git commit -m "$(parse_git_branch_only) -- $@"; }
+function urp { git push origin $(parse_git_branch_only); }
 
 # Constants
 default_username='tyler.corkill'
